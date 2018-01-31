@@ -191,3 +191,7 @@
 	/* USB Type-A ports' VBUS is always on */
 	status = "okay";
 };
+
+&hwspinlock {
+	status = "okay";
+};
