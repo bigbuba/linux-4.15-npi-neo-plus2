@@ -79,11 +79,16 @@
 		};
 	};
 
-	soc {
+	soc: soc {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
+
+		sid: eeprom@01c14200 {
+                        reg = <0x01c14200 0x200>;
+                        status = "disabled";
+                };
 
 		syscon: syscon@1c00000 {
 			compatible = "allwinner,sun8i-h3-system-controller",
@@ -386,6 +391,11 @@
 				pins = "PA0", "PA1";
 				function = "uart2";
 			};
+
+			uart2_rts_cts_pins: uart2_rts_cts {
+                                pins = "PA2", "PA3";
+                                function = "uart2";
+                        };
 
 			uart3_pins: uart3 {
 				pins = "PA13", "PA14";
