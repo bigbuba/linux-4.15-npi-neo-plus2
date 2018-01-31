@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017 Antony Antony <antony@phenome.org>
- * Copyright (C) 2016 ARM Ltd.
+ * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
  *
  * This file is dual-licensed: you can use it either under the terms
  * of the GPL or the X11 license, at your option. Note that this dual
@@ -46,15 +45,89 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/pinctrl/sun4i-a10.h>
+#include <dt-bindings/thermal/thermal.h>
 
 / {
-	model = "FriendlyARM NanoPi NEO Plus2";
-	compatible = "friendlyarm,nanopi-neo-plus2", "allwinner,sun50i-h5";
+	model = "FriendlyARM NanoPi NEO 2";
+	compatible = "friendlyarm,nanopi-neo2", "allwinner,sun50i-h5";
 
 	aliases {
+		ethernet0 = &emac;
 		serial0 = &uart0;
+		serial2 = &uart2;
+                serial3 = &uart3;
+		i2c0 = &i2c0;
+                spi0 = &spi0;
+		mmc0 = &mmc0;
+		mmc1 = &mmc1;
+                mmc2 = &mmc2;
 	};
+
+	cpu_opp_table: opp_table {
+                compatible = "operating-points-v2";
+                opp-shared;
+
+                opp@408000000 {
+                        opp-hz = /bits/ 64 <408000000>;
+                        opp-microvolt = <1100000>;
+                        clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@648000000 {
+                        opp-hz = /bits/ 64 <648000000>;
+                        opp-microvolt = <1100000>;
+                        clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@816000000 {
+                        opp-hz = /bits/ 64 <816000000>;
+                        opp-microvolt = <1100000>;
+                        clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@912000000 {
+                       opp-hz = /bits/ 64 <912000000>;
+                       opp-microvolt = <1100000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@960000000 {
+                       opp-hz = /bits/ 64 <960000000>;
+                       opp-microvolt = <1100000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@1008000000 {
+                       opp-hz = /bits/ 64 <1008000000>;
+                       opp-microvolt = <1100000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+		opp@1056000000 {
+                       opp-hz = /bits/ 64 <1056000000>;
+                       opp-microvolt = <1300000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@1104000000 {
+                       opp-hz = /bits/ 64 <1104000000>;
+                       opp-microvolt = <1300000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+                opp@1152000000 {
+                       opp-hz = /bits/ 64 <1152000000>;
+                       opp-microvolt = <1300000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+		opp@1200000000 {
+                       opp-hz = /bits/ 64 <1200000000>;
+                       opp-microvolt = <1300000>;
+                       clock-latency-ns = <244144>; /* 8 32k periods */
+                };
+
+        };
 
 	chosen {
 		stdout-path = "serial0:115200n8";
@@ -70,14 +143,14 @@
 		};
 
 		status {
-			label = "nanopi:red:status";
-			gpios = <&pio 0 20 GPIO_ACTIVE_HIGH>;
+			label = "nanopi:blue:status";
+			gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
 		};
 	};
 
 	reg_gmac_3v3: gmac-3v3 {
 		compatible = "regulator-fixed";
-		pinctrl-names = "default";
 		regulator-name = "gmac-3v3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
@@ -93,44 +166,267 @@
 		regulator-max-microvolt = <3300000>;
 	};
 
-	vdd_cpux: gpio-regulator {
-		compatible = "regulator-gpio";
-		pinctrl-names = "default";
-		regulator-name = "vdd-cpux";
-		regulator-type = "voltage";
-		regulator-boot-on;
-		regulator-always-on;
-		regulator-min-microvolt = <1100000>;
-		regulator-max-microvolt = <1300000>;
-		regulator-ramp-delay = <50>; /* 4ms */
-		gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>;
-		gpios-states = <0x1>;
-		states = <1100000 0x0
-			  1300000 0x1>;
+	reg_usb0_vbus: usb0-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb0-vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&r_pio 0 2 GPIO_ACTIVE_HIGH>; /* PL2 */
+		status = "okay";
 	};
 
 	wifi_pwrseq: wifi_pwrseq {
-		compatible = "mmc-pwrseq-simple";
-		pinctrl-names = "default";
-		reset-gpios = <&r_pio 0 7 GPIO_ACTIVE_LOW>; /* PL7 */
-		post-power-on-delay-ms = <200>;
+                compatible = "mmc-pwrseq-simple";
+                pinctrl-names = "default";
+                reset-gpios = <&r_pio 0 7 GPIO_ACTIVE_LOW>; /* PL7 */
+                post-power-on-delay-ms = <200>;
+        };
+
+	rfkill_bt {
+                compatible = "rfkill-gpio";
+                pinctrl-names = "default";
+                pinctrl-0 = <&bt_pwr_pin>;
+                reset-gpios = <&pio 6 13 GPIO_ACTIVE_HIGH>; /* PG13 */
+                clocks = <&osc32k>;
+                clock-frequency = <32768>;
+                rfkill-name = "sunxi-bt";
+                rfkill-type = "bluetooth";
+        };
+
+	vdd_cpux: vdd_cpux_regulator {
+                compatible = "regulator-gpio";
+
+                pinctrl-names = "default";
+                pinctrl-0 = <&vdd_cpux_r_opc>;
+
+                regulator-name = "vdd-cpux";
+                regulator-type = "voltage";
+                regulator-boot-on;
+                regulator-always-on;
+                regulator-min-microvolt = <1100000>;
+                regulator-max-microvolt = <1300000>;
+                regulator-ramp-delay = <50>; /* 4ms */
+
+                gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>;
+                gpios-states = <0x1>;
+                states = <1100000 0x0
+                          1300000 0x1>;
+        };
+
+	mailbox0: mbox@0 {
+                compatible = "arm,smc-mbox";
+                #mbox-cells = <1>;
+                arm,smc-func-ids = <0x82000001>, <0x82000002>;
+                method = "smc";
+        };
+
+        sram: sram@10000{
+                compatible = "mmio-sram";
+                reg = <0x10000 0x8000>;
+
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges = <0 0x10000 0x8000>;
+
+                cpu_scp_mem: scp-shmem@7e00 {
+                        compatible = "mmio-sram";
+                        reg = <0x7e00 0x200>;
+			export;
+	        };
+	};
+
+        scpi_sensors0: sensors {
+		compatible = "arm,scpi-sensors";
+                #thermal-sensor-cells = <1>;
+        };
+
+        scpi {
+                compatible = "arm,scpi";
+                mboxes = <&mailbox0 0>;
+                shmem = <&cpu_scp_mem>;
+        };
+
+	thermal-zones {
+		cpu_thermal: cpu_thermal {
+			polling-delay-passive = <250>;
+		        polling-delay = <1000>;
+			thermal-sensors = <&scpi_sensors0 0>;
+
+			trips {
+	                        cpu_warm: cpu_warm {
+					temperature = <65000>;
+					hysteresis = <2000>;
+					type = "passive";
+	                        };
+
+	                        cpu_hot_pre: cpu_hot_pre {
+	                                temperature = <70000>;
+	                                hysteresis = <2000>;
+	                                type = "passive";
+	                        };
+
+	                        cpu_hot: cpu_hot {
+	                                temperature = <75000>;
+	                                hysteresis = <2000>;
+	                                type = "passive";
+	                        };
+
+	                        cpu_very_hot_pre: cpu_very_hot_pre {
+	                                temperature = <80000>;
+	                                hysteresis = <2000>;
+	                                type = "passive";
+	                        };
+
+	                        cpu_very_hot: cpu_very_hot {
+	                                temperature = <90000>;
+	                                hysteresis = <2000>;
+	                                type = "passive";
+	                        };
+
+				cpu_crit_pre: cpu_crit_pre {
+                                        temperature = <95000>;
+                                        hysteresis = <2000>;
+                                        type = "hot";
+                                };
+
+	                        cpu_crit: cpu_crit {
+	                                temperature = <100000>;
+	                                hysteresis = <2000>;
+	                                type = "critical";
+	                        };
+			};
+
+			cooling-maps {
+				cpu_warm_limit_cpu {
+					trip = <&cpu_warm>;
+	                                cooling-device = <&cpu0 THERMAL_NO_LIMIT 1>;
+				};
+
+	                        cpu_hot_pre_limit_cpu {
+	                                trip = <&cpu_hot_pre>;
+	                                cooling-device = <&cpu0 2 4>;
+	                        };
+
+	                        cpu_hot_limit_cpu {
+	                                trip = <&cpu_hot>;
+	                                cooling-device = <&cpu0 5 6>;
+	                        };
+
+	                        cpu_very_hot_pre_limit_cpu {
+	                                 trip = <&cpu_very_hot>;
+	                                 cooling-device = <&cpu0 7 8>;
+	                        };
+
+	                        cpu_very_hot_limit_cpu {
+	                                 trip = <&cpu_very_hot>;
+	                                 cooling-device = <&cpu0 9 THERMAL_NO_LIMIT>;
+	                        };
+			};
+		};
+
+		gpu_therm: gpu_thermal {
+                        polling-delay-passive = <330>;
+                        polling-delay = <1000>;
+                        thermal-sensors = <&scpi_sensors0 1>;
+                };
 	};
 };
 
-&codec {
-	allwinner,audio-routing =
-		"Line Out", "LINEOUT",
-		"MIC1", "Mic",
-		"Mic",  "MBIAS";
-	status = "okay";
+&soc {
+        hwspinlock: hwspinlock@1c18000 {
+                compatible = "allwinner,sun8i-hwspinlock";
+                reg = <0x01c18000 0x400>;
+                resets = <&ccu RST_BUS_SPINLOCK>;
+                reset-names = "ahb";
+                clocks = <&ccu CLK_BUS_SPINLOCK>;
+                clock-names = "ahb";
+                status = "okay";
+        };
+};
+
+&cpus {
+        A53_L2: l2-cache0 {
+                compatible = "cache";
+         };
+};
+
+&cpu0 {
+	operating-points-v2 = <&cpu_opp_table>;
+        cpu-supply = <&vdd_cpux>;
+	next-level-cache = <&A53_L2>;
+        #cooling-cells = <2>;
+};
+
+&cpu1 {
+	operating-points-v2 = <&cpu_opp_table>;
+	cpu-supply = <&vdd_cpux>;
+	next-level-cache = <&A53_L2>;
+};
+
+&cpu2 {
+        operating-points-v2 = <&cpu_opp_table>;
+	cpu-supply = <&vdd_cpux>;
+	next-level-cache = <&A53_L2>;
+};
+
+&cpu3 {
+        operating-points-v2 = <&cpu_opp_table>;
+	cpu-supply = <&vdd_cpux>;
+	next-level-cache = <&A53_L2>;
+};
+
+&sid {
+        compatible = "allwinner,sun50i-a64-sid";
+        status = "okay";
 };
 
 &ehci0 {
-	status = "okay";
+        status = "okay";
+};
+
+&ohci0 {
+        status = "okay";
+};
+
+&ehci1 {
+        status = "okay";
+};
+
+&ohci1 {
+        status = "okay";
+};
+
+&ehci2 {
+        status = "okay";
+};
+
+&ohci2 {
+        status = "okay";
 };
 
 &ehci3 {
+        status = "okay";
+};
+
+&ohci3 {
+        status = "okay";
+};
+
+&emac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&emac_rgmii_pins>;
+	phy-supply = <&reg_gmac_3v3>;
+	phy-handle = <&ext_rgmii_phy>;
+	phy-mode = "rgmii";
 	status = "okay";
+};
+
+&external_mdio {
+        ext_rgmii_phy: ethernet-phy@7 {
+                compatible = "ethernet-phy-ieee802.3-c22";
+                reg = <7>;
+        };
 };
 
 &mmc0 {
@@ -138,42 +434,53 @@
 	pinctrl-0 = <&mmc0_pins_a>, <&mmc0_cd_pin>;
 	vmmc-supply = <&reg_vcc3v3>;
 	bus-width = <4>;
+	disable-wp;
 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
 	status = "okay";
 };
 
 &mmc1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc1_pins_a>;
-	vmmc-supply = <&reg_vcc3v3>;
-	vqmmc-supply = <&reg_vcc3v3>;
-	mmc-pwrseq = <&wifi_pwrseq>;
-	bus-width = <4>;
-	non-removable;
-	status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&mmc1_pins_a>;
+        vmmc-supply = <&reg_vcc3v3>;
+        vqmmc-supply = <&reg_vcc3v3>;
+        mmc-pwrseq = <&wifi_pwrseq>;
+        bus-width = <4>;
+        non-removable;
+        no-sd;
+        no-mmc;
+        status = "okay";
 
-	brcmf: wifi@1 {
-		reg = <1>;
-		compatible = "brcm,bcm4329-fmac";
-	};
+        brcmf: wifi@1 {
+                reg = <1>;
+                compatible = "brcm,bcm4329-fmac";
+        };
 };
 
 &mmc2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc2_8bit_pins>;
-	vmmc-supply = <&reg_vcc3v3>;
-	bus-width = <8>;
-	non-removable;
-	cap-mmc-hw-reset;
-	status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&mmc2_8bit_pins>;
+        vmmc-supply = <&reg_vcc3v3>;
+        bus-width = <8>;
+        non-removable;
+        no-sd;
+        no-sdio;
+        cap-mmc-hw-reset;
+        status = "okay";
 };
 
-&ohci0 {
-	status = "okay";
+&pio {
+        bt_pwr_pin: bt_pwr_pin@0 {
+                pins = "PG13";
+                function = "gpio_out";
+        };
 };
 
-&ohci3 {
-	status = "okay";
+&r_pio {
+        vdd_cpux_r_opc: regulator_pins@0 {
+                pins = "PL6";
+                function = "gpio_out";
+        };
 };
 
 &uart0 {
@@ -182,16 +489,64 @@
 	status = "okay";
 };
 
+&uart1 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&uart1_pins>;
+        status = "okay";
+};
+
+&uart2 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&uart2_pins>, <&uart2_rts_cts_pins>;
+        status = "okay";
+};
+
+&uart3 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&uart3_pins>, <&uart3_rts_cts_pins>;
+        status = "okay";
+};
+
 &usb_otg {
 	dr_mode = "host";
 	status = "okay";
 };
 
 &usbphy {
-	/* USB Type-A ports' VBUS is always on */
+	/* USB Type-A port's VBUS is always on */
+	usb0_id_det-gpios = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
+	usb0_vbus-supply = <&reg_usb0_vbus>;
+	usb1_vbus-supply = <&reg_usb0_vbus>;
+	usb2_vbus-supply = <&reg_usb0_vbus>;
+	usb3_vbus-supply = <&reg_usb0_vbus>;
 	status = "okay";
 };
 
+&i2c0_pins {
+	bias-pull-up;
+	drive-strength = <30>;
+};
+
+&i2c0 {
+	clock-frequency = <100000>;
+        status = "okay";
+};
+
+&spi0 {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        spi-max-frequency = <1000000>;
+        pinctrl-0 = <&spi0_pins>;
+        status = "okay";
+
+        spidev {
+                compatible = "spidev";
+                status = "okay";
+                reg = <0>;
+                spi-max-frequency = <1000000>;
+        };
+};
+
 &hwspinlock {
-	status = "okay";
+        status = "okay";
 };
