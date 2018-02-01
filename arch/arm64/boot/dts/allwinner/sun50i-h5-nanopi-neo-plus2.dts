@@ -238,6 +238,8 @@
 
         scpi_sensors0: sensors {
 		compatible = "arm,scpi-sensors";
+		clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
+		clock-names = "bus", "mod";
                 #thermal-sensor-cells = <1>;
         };
 
