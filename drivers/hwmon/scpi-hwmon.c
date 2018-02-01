@@ -22,6 +22,8 @@
 #include <linux/slab.h>
 #include <linux/sysfs.h>
 #include <linux/thermal.h>
+#include <linux/clk.h>
+
 
 struct sensor_data {
 	unsigned int scale;
@@ -44,6 +46,8 @@ struct scpi_sensors {
 	struct attribute **attrs;
 	struct attribute_group group;
 	const struct attribute_group *groups[2];
+	struct clk *clk_bus;
+	struct clk *clk_mod;
 };
 
 static const u32 gxbb_scpi_scale[] = {
@@ -176,6 +180,22 @@ static int scpi_hwmon_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 	scale = of_id->data;
+
+	scpi_sensors->clk_bus = devm_clk_get(&pdev->dev, "bus");
+	if (!IS_ERR(scpi_sensors->clk_bus)) {
+		ret = clk_prepare_enable(scpi_sensors->clk_bus);
+		if (ret)
+		dev_err(dev, "failed prepare clock \"bus\", err = %d\n",
+			ret);
+	   }
+
+	scpi_sensors->clk_mod = devm_clk_get(&pdev->dev, "mod");
+	if (!IS_ERR(scpi_sensors->clk_mod)) {
+		ret = clk_prepare_enable(scpi_sensors->clk_mod);
+		if (ret)
+		dev_err(dev, "Failed prepare clock \"mod\", err = %d\n",
+			ret);
+	   }
 
 	for (i = 0, idx = 0; i < nr_sensors; i++) {
 		struct sensor_data *sensor = &scpi_sensors->data[idx];
