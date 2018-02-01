@@ -19,6 +19,22 @@ Required properties:
 	  SHM can be any memory reserved for the purpose of this communication
 	  between the processors.
 
+Optional properties:
+
+- clocks: minimum wake-up inputs debouncer period in
+  microseconds. It's usually a board-related property.
+- clocks: phandle to the clocks feeding the sensor.
+	  Some CCU drivers ungate unused clocks. As a result, the sensor
+	  does not work. To prevent the clocks from ungate, clocks should be
+	  listed. Two clocks allowed per sensor (BUS and MOD).
+- clock-names: name of the clocks feeding the sensor.
+	  Should be "bus" or "mod".
+
+- atmel,wakeup-rtc-timer: boolean to enable Real-Time Clock wake-up.
+
+The node contains child nodes for each wake-up input that the platform uses.
+
+
 See Documentation/devicetree/bindings/mailbox/mailbox.txt
 for more details about the generic mailbox controller and
 client driver bindings.
@@ -163,6 +179,8 @@ scpi_protocol: scpi@2e000000 {
 	scpi_sensors0: sensors {
 		compatible = "arm,scpi-sensors";
 		#thermal-sensor-cells = <1>;
+		clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
+               clock-names = "bus", "mod";
 	};
 
 	scpi_devpd: scpi-power-domains {
