@@ -46,6 +46,20 @@ static const struct ce_variant ce_h3_variant = {
 	.alg_akcipher = { CE_ID_NOTSUPP, CE_ALG_RSA, },
 };
 
+static const struct ce_variant ce_h5_variant = {
+        .alg_cipher = { CE_ID_NOTSUPP, CE_ALG_AES, CE_ALG_DES, CE_ALG_3DES, },
+        .op_mode = { CE_ID_NOTSUPP, CE_OP_ECB, CE_OP_CBC, CE_OP_CTR,
+                CE_OP_CTS, CE_ID_NOTSUPP, CE_ID_NOTSUPP, CE_ID_NOTSUPP
+        },
+        .intreg = CE_ISR,
+        .maxflow = 4,
+        .prng = CE_ALG_PRNG,
+        .maxrsakeysize = 2048,
+        .rsa_op_mode = { CE_OP_RSA_512, CE_OP_RSA_1024, CE_OP_RSA_2048,
+                        CE_ID_NOTSUPP, CE_ID_NOTSUPP, },
+        .alg_akcipher = { CE_ID_NOTSUPP, CE_ALG_RSA, },
+};
+
 static const struct ce_variant ce_a64_variant = {
 	.alg_cipher = { CE_ID_NOTSUPP, CE_ALG_AES, CE_ALG_DES, CE_ALG_3DES, },
 	.op_mode = { CE_ID_NOTSUPP, CE_OP_ECB, CE_OP_CBC, CE_OP_CTR,
@@ -853,6 +867,8 @@ static int sun8i_ce_remove(struct platform_device *pdev)
 static const struct of_device_id sun8i_ce_crypto_of_match_table[] = {
 	{ .compatible = "allwinner,sun8i-h3-crypto",
 	  .data = &ce_h3_variant },
+	{ .compatible = "allwinner,sun50i-h5-crypto",
+          .data = &ce_h5_variant },
 	{ .compatible = "allwinner,sun50i-a64-crypto",
 	  .data = &ce_a64_variant },
 	{ .compatible = "allwinner,sun8i-a83t-crypto",
