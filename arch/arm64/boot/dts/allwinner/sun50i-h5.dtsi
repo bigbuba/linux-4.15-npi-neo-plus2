@@ -130,5 +130,5 @@
 };
 
 &crypto {
-	compatible = "allwinner,sun8i-h3-crypto";
+	compatible = "allwinner,sun50i-h5-crypto";
 };

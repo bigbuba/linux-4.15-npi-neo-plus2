@@ -557,3 +557,7 @@
 &hwspinlock {
         status = "okay";
 };
+
+&crypto {
+	status = "okay";
+};
