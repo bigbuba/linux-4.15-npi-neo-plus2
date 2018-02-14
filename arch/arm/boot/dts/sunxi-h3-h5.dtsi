@@ -162,7 +162,7 @@
 		};
 
 		crypto: crypto@1c15000 {
-			compatible = "allwinner,sun8i-h3-crypto";
+			/* compatible is in per SoC .dtsi file */
 			reg = <0x01c15000 0x1000>;
 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "ce_ns";
