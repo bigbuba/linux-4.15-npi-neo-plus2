@@ -449,6 +449,18 @@ config HW_RANDOM_S390
 
 	  If unsure, say Y.
 
+config HW_RANDOM_CRA_PRNG
+        bool "User-space interface for Crypto API (PRNG)"
+        depends on HW_RANDOM
+	---help---
+          This driver provides user-side support for the Hardware
+	  Pseudo-Random Number Generator.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called crypto-api-prng.
+
+	  If unsure, say Y.
+
 endif # HW_RANDOM
 
 config UML_RANDOM
