@@ -1,0 +1,12 @@
+Crypto API Random Number Generator.
+
+Required properties:
+
+- compatible      : should be "crypto-api-prng"
+- cra_driver_name : specifies RNG driver name
+
+Example:
+	crarng: crarng@0 {
+                compatible = "crypto-api-prng";
+                cra_driver_name="sun8i_ce_rng";
+        };
