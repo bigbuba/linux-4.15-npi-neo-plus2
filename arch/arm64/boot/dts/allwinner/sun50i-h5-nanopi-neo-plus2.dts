@@ -149,6 +149,11 @@
 		};
 	};
 
+	hwprnd: hwprnd@0 {
+                compatible = "crypto-api-prng";
+                cra_driver_name="sun8i_ce_rng";
+        };
+
 	reg_gmac_3v3: gmac-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "gmac-3v3";
